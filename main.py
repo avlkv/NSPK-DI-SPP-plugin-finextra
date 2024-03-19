@@ -6,7 +6,7 @@ import pandas
 
 from src.spp.types import SPP_document
 
-# config.fileConfig('dev.logger.conf')
+config.fileConfig('dev.logger.conf')
 
 
 def driver():
@@ -16,7 +16,7 @@ def driver():
     options = webdriver.ChromeOptions()
 
     # Параметр для того, чтобы браузер не открывался.
-    # options.add_argument('headless')
+    options.add_argument('headless')
 
     options.add_argument('window-size=1920x1080')
     options.add_argument("disable-gpu")
@@ -37,7 +37,7 @@ def to_dict(doc: SPP_document) -> dict:
     }
 
 
-parser = FINEXTRA(driver())
+parser = FINEXTRA(driver(), max_count_documents=2)
 docs: list[SPP_document] = parser.content()
 
 try:

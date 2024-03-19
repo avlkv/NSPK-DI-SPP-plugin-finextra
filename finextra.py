@@ -33,7 +33,7 @@ class FINEXTRA:
     SOURCE_NAME = 'finextra'
     _content_document: list[SPP_document]
 
-    def __init__(self, webdriver: WebDriver, last_document: SPP_document, max_count_documents: int = 100, *args, **kwargs):
+    def __init__(self, webdriver: WebDriver, max_count_documents: int = 100, *args, **kwargs):
         """
         Конструктор класса парсера
 
@@ -93,7 +93,7 @@ class FINEXTRA:
                 self.driver.get(page_link)
             except:
                 self.logger.debug('TimeoutException:',
-                            f"https://www.finextra.com/latest-news?date={datetime.strftime(current_date, '%Y-%m-%d')}")
+                                  f"https://www.finextra.com/latest-news?date={datetime.strftime(current_date, '%Y-%m-%d')}")
                 current_date = current_date - timedelta(1)
                 # self.logger.debug(f"Изменение даты на новую: {datetime.strftime(current_date, '%Y-%m-%d')}")
                 continue
@@ -180,9 +180,9 @@ class FINEXTRA:
 
                         try:
                             category_name = \
-                            left_tags.find_element(By.CLASS_NAME, 'category--title').find_element(By.TAG_NAME,
-                                                                                                  'span').get_attribute(
-                                'innerHTML').split(' |')[0]
+                                left_tags.find_element(By.CLASS_NAME, 'category--title').find_element(By.TAG_NAME,
+                                                                                                      'span').get_attribute(
+                                    'innerHTML').split(' |')[0]
                             category_desc = left_tags.find_element(By.CLASS_NAME, 'category--meta').get_attribute(
                                 'innerHTML')
                         except:
@@ -190,10 +190,10 @@ class FINEXTRA:
                             category_desc = ''
 
                         abstract = self.driver.find_element(By.CLASS_NAME, 'article--body').find_element(By.CLASS_NAME,
-                                                                                                    'stand-first').text
+                                                                                                         'stand-first').text
                         text = self.driver.find_element(By.CLASS_NAME, 'article--body').text
                         comment_count = self.driver.find_element(By.ID, 'comment').find_element(By.XPATH,
-                                                                                           './following-sibling::h4').text.split()[
+                                                                                                './following-sibling::h4').text.split()[
                             1].split('(', 1)[1].split(')')[0]
 
                         # file_name = article_url.split('/')[-1] + '.txt'
@@ -212,7 +212,17 @@ class FINEXTRA:
                         #
                         # df.loc[df.shape[0]] = row_data_list
 
-                        other_data = {}
+                        other_data = {'article_type': article_type,
+                                      'related_comp': related_comp,
+                                      'lead_ch': lead_ch,
+                                      'channels': channels,
+                                      'keywords': keywords,
+                                      'category_name': category_name,
+                                      'category_desc': category_desc,
+                                      'tw_count': tw_count,
+                                      'li_count': li_count,
+                                      'fb_count': fb_count,
+                                      'comment_count': comment_count}
 
                         doc = SPP_document(None,
                                            title,
@@ -224,7 +234,6 @@ class FINEXTRA:
                                            date,
                                            datetime.now())
                         self._content_document.append(doc)
-
 
                         # Логирование найденного документа
                         self.logger.info(self._find_document_text_for_logger(doc))
@@ -267,8 +276,6 @@ class FINEXTRA:
 
         self.driver.close()
         self.driver.quit()
-
-
 
         # ---
         # ========================================
